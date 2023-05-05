@@ -1,0 +1,217 @@
+﻿<UserControl x:Class="ELSuitcases.BBS.WpfClient.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ELSuitcases.BBS.WpfClient"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             xmlns:lib="clr-namespace:ELSuitcases.BBS.Library;assembly=ELSuitcases.BBS.Library"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid x:Name="PART_LayoutRoot">
+        <Grid.Style>
+            <Style TargetType="{x:Type Grid}">
+                <Style.Setters>
+                    <Setter Property="Margin" Value="15 15 15 15" />
+                </Style.Setters>
+            </Style>
+        </Grid.Style>
+        
+        <StackPanel>
+            <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Style.Setters>
+                        <Setter Property="HorizontalAlignment" Value="Center" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="Orientation" Value="Vertical" />
+                        <Setter Property="Width" Value="{Binding ElementName=PART_LayoutRoot, Path=ActualWidth}" />
+                    </Style.Setters>
+                </Style>
+            </StackPanel.Style>
+
+            <Image>
+                <Image.Style>
+                    <Style TargetType="{x:Type Image}">
+                        <Style.Setters>
+                            <Setter Property="Margin" Value="0 0 0 0" />
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Width" Value="48" />
+                            <Setter Property="Height" Value="48" />
+                            <Setter Property="Stretch" Value="UniformToFill" />
+                            <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
+                            <Setter Property="Source" Value="/app.png" />
+                        </Style.Setters>
+                    </Style>
+                </Image.Style>
+            </Image>
+
+            <TextBlock>
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Style.Setters>
+                            <Setter Property="Margin" Value="0 20 0 20" />
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="TextAlignment" Value="Center" />
+                            <Setter Property="FontSize" Value="24" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                            <Setter Property="Foreground">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="Black" Opacity="1" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Text" Value="{x:Static lib:Constants.APPLICATION_NAME}" />
+                            <Setter Property="Effect">
+                                <Setter.Value>
+                                    <DropShadowEffect ShadowDepth="3"
+                                                      BlurRadius="1"
+                                                      Color="WhiteSmoke"
+                                                      Opacity="0.75" />
+                                </Setter.Value>
+                            </Setter>
+                        </Style.Setters>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <Grid>
+                <Grid.Style>
+                    <Style TargetType="{x:Type Grid}">
+                        <Style.Setters>
+                            <Setter Property="Margin" Value="0 0 0 10" />
+                            <Setter Property="Height" Value="30" />
+                        </Style.Setters>
+                    </Style>
+                </Grid.Style>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Style.Setters>
+                                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="TextAlignment" Value="Left" />
+                                <Setter Property="Text" Value="사용자 이름 : " />
+                            </Style.Setters>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <TextBox x:Name="txtUserName" 
+                         Grid.Column="1">
+                    <TextBox.Style>
+                        <Style TargetType="{x:Type TextBox}">
+                            <Style.Setters>
+                                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                <Setter Property="VerticalAlignment" Value="Stretch" />
+                                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                <Setter Property="VerticalContentAlignment" Value="Center" />
+                                <Setter Property="MaxLength" Value="16" />
+                                <Setter Property="MaxLines" Value="1" />
+                                <Setter Property="Text" Value="{Binding UserName, UpdateSourceTrigger=PropertyChanged}" />
+                            </Style.Setters>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLoggingIn}" Value="True">
+                                    <DataTrigger.Setters>
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger.Setters>
+                                </DataTrigger>
+                        </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+            </Grid>
+            <Button x:Name="btnLogin">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}">
+                        <Style.Setters>
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Width" Value="120" />
+                            <Setter Property="Height" Value="30" />
+                            <Setter Property="Cursor" Value="Hand" />
+                            <Setter Property="IsDefault" Value="True" />
+                        </Style.Setters>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsLoggingIn}" Value="True">
+                                <DataTrigger.Setters>
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger.Setters>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Button.Content>
+                    <TextBlock Text="로그인" />
+                </Button.Content>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <i:InvokeCommandAction Command="{Binding LoginCommand}"
+                                               PassEventArgsToCommand="True" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <TextBlock>
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Style.Setters>
+                            <Setter Property="Margin" Value="0 20 0 20" />
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="TextAlignment" Value="Center" />
+                            <Setter Property="FontSize" Value="12" />
+                            <Setter Property="Foreground">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="DimGray" Opacity="1" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Text" Value="{Binding ApiServerURI, Mode=OneWay}" />
+                        </Style.Setters>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <Border>
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}">
+                        <Style.Setters>
+                            <Setter Property="Margin" Value="15 15 15 15" />
+                            <Setter Property="HorizontalAlignment" Value="Stretch" />
+                            <Setter Property="VerticalAlignment" Value="Stretch" />
+                            <Setter Property="Height" Value="50" />
+                            <Setter Property="Background" Value="LightYellow" />
+                            <Setter Property="BorderBrush" Value="Yellow" />
+                            <Setter Property="BorderThickness" Value="3 3 3 3" />
+                            <Setter Property="CornerRadius" Value="10" />
+                            <Setter Property="TextElement.FontSize" Value="16" />
+                            <Setter Property="TextElement.FontWeight" Value="SemiBold" />
+                            <Setter Property="TextElement.Foreground" Value="Green" />
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Style.Setters>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsLoggingIn}" Value="True">
+                                <DataTrigger.Setters>
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger.Setters>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Text="로그인 중 ... 잠시만 기다려 주십시오." />
+            </Border>
+        </StackPanel>
+    </Grid>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding ViewLoadedCommand}"
+                                   PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+</UserControl>

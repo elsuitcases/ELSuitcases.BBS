@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <StartupObject>ELSuitcases.BBS.WpfClient.App</StartupObject>
+    <Title>ELSuitcases'BBS WPF Application</Title>
+    <Authors>ELSuitcases</Authors>
+    <Copyright>Copyright(c) 2023 ELSuitcases.</Copyright>
+    <PackageProjectUrl>https://github.com/elsuitcases</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="app.png" />
+    <None Remove="Images\add.png" />
+    <None Remove="Images\column_right.png" />
+    <None Remove="Images\diskette.png" />
+    <None Remove="Images\information.png" />
+    <None Remove="Images\pencil.png" />
+    <None Remove="Images\refresh_all.png" />
+    <None Remove="Images\reject.png" />
+    <None Remove="Images\search_minus.png" />
+    <None Remove="Images\text_dropcaps.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ELSuitcases.BBS.Library\ELSuitcases.BBS.Library.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="app.png" />
+    <Resource Include="Images\add.png" />
+    <Resource Include="Images\column_right.png" />
+    <Resource Include="Images\diskette.png" />
+    <Resource Include="Images\information.png" />
+    <Resource Include="Images\pencil.png" />
+    <Resource Include="Images\refresh_all.png" />
+    <Resource Include="Images\reject.png" />
+    <Resource Include="Images\search_minus.png" />
+    <Resource Include="Images\text_dropcaps.png" />
+  </ItemGroup>
+
+</Project>
