@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.ComponentModel;
+using System.Net.Http;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
@@ -134,7 +135,7 @@ namespace ELSuitcases.BBS.WpfClient
             IsQuering = true;
             QueryURL = urlApiRequest;
 
-            using (var client = APIClientHelper.GenerateClient(QueryURL, Constants.DEFAULT_VALUE_API_CLIENT_TIMEOUT))
+            using (HttpClient client = APIClientHelper.GenerateClient(QueryURL, Constants.DEFAULT_VALUE_API_CLIENT_TIMEOUT))
             {
                 try
                 {
@@ -159,7 +160,7 @@ namespace ELSuitcases.BBS.WpfClient
                 BoardDTO? board = null;
                 Uri uriApiBoard = new Uri(string.Format("{0}/{1}", App.APIServerURL_Board, bbsId), UriKind.Absolute);
 
-                using (var clientBoard = APIClientHelper.GenerateClient(uriApiBoard, Constants.DEFAULT_VALUE_API_CLIENT_TIMEOUT))
+                using (HttpClient clientBoard = APIClientHelper.GenerateClient(uriApiBoard, Constants.DEFAULT_VALUE_API_CLIENT_TIMEOUT))
                 {
                     Common.PrintDebugInfo(uriApiBoard.ToString(), GetType().Name);
                     board = JsonSerializer.Deserialize<BoardDTO?>(await APIClientHelper.Get_String(clientBoard, uriApiBoard));

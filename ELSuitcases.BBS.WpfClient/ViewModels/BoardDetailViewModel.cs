@@ -7,16 +7,17 @@ using System.Threading.Tasks;
 
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Net.Http;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using ELSuitcases.BBS.Library;
 using ELSuitcases.BBS.WpfClient.Messages;
-using CommunityToolkit.Mvvm.DependencyInjection;
 
 namespace ELSuitcases.BBS.WpfClient
 {
@@ -378,7 +379,7 @@ namespace ELSuitcases.BBS.WpfClient
             {
                 List<BoardDTO>? qb = null;
                 
-                using (var client = APIClientHelper.GenerateClient(uriApiBoard, Constants.DEFAULT_VALUE_API_CLIENT_TIMEOUT))
+                using (HttpClient client = APIClientHelper.GenerateClient(uriApiBoard, Constants.DEFAULT_VALUE_API_CLIENT_TIMEOUT))
                 {
                     string data = await APIClientHelper.Get_String(client, uriApiBoard);
                     if (!string.IsNullOrEmpty(data))

@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text;
+using Microsoft.AspNetCore.Mvc;
 using ELSuitcases.BBS.Library;
 using ELSuitcases.BBS.Library.Server;
-using System.Text;
 
 namespace ELSuitcases.BBS.APIServer.Controllers
 {

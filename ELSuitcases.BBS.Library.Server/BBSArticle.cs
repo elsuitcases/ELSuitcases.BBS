@@ -12,7 +12,7 @@ namespace ELSuitcases.BBS.Library.Server
     public class BBSArticle
     {
         #region [SELECT]
-        public static Task<DataTable> List(string? bbsId)
+        public static async Task<DataTable> List(string? bbsId)
         {
             List<OracleParameter> parameters = new List<OracleParameter>
             {
@@ -30,10 +30,10 @@ namespace ELSuitcases.BBS.Library.Server
                 }
             };
 
-            return OracleHelper.Select(OracleHelper.GetConnection(), "PKG_BBS_Article.List_All", CommandType.StoredProcedure, parameters);
+            return await OracleHelper.Select(OracleHelper.GetConnection(), "PKG_BBS_Article.List_All", CommandType.StoredProcedure, parameters);
         }
 
-        public static Task<DataTable> List_By_Page(string bbsId, int pageNo = 1, int pageSize = 10, string keywordTitle = "")
+        public static async Task<DataTable> List_By_Page(string bbsId, int pageNo = 1, int pageSize = 10, string keywordTitle = "")
         {
             OracleParameter paraTotalCount = new OracleParameter()
             {
@@ -88,7 +88,7 @@ namespace ELSuitcases.BBS.Library.Server
                 paraPageCount
             };
 
-            return OracleHelper.Select(OracleHelper.GetConnection(), "PKG_BBS_Article.List_By_Page", CommandType.StoredProcedure, parameters);
+            return await OracleHelper.Select(OracleHelper.GetConnection(), "PKG_BBS_Article.List_By_Page", CommandType.StoredProcedure, parameters);
         }
 
         public static async Task<ArticleDTO?> Read_Article(string bbsId, string articleId, int replyId, bool isIncreaseReadCount = false)
@@ -145,7 +145,7 @@ namespace ELSuitcases.BBS.Library.Server
             return article;
         }
 
-        public static Task<DataTable> Search_Article_By_Title(string bbsId, string title)
+        public static async Task<DataTable> Search_Article_By_Title(string bbsId, string title)
         {
             List<OracleParameter> parameters = new List<OracleParameter>
             {
@@ -169,12 +169,12 @@ namespace ELSuitcases.BBS.Library.Server
                 }
             };
 
-            return OracleHelper.Select(OracleHelper.GetConnection(), "PKG_BBS_Article.Search_Article_By_Title", CommandType.StoredProcedure, parameters);
+            return await OracleHelper.Select(OracleHelper.GetConnection(), "PKG_BBS_Article.Search_Article_By_Title", CommandType.StoredProcedure, parameters);
         }
         #endregion
 
         #region [WRITE]
-        public static Task<int> Delete_Article(string bbsId, string articleId, int replyId)
+        public static async Task<int> Delete_Article(string bbsId, string articleId, int replyId)
         {
             List<OracleParameter> parameters = new List<OracleParameter>
             {
@@ -206,7 +206,7 @@ namespace ELSuitcases.BBS.Library.Server
                 }
             };
 
-            return OracleHelper.Write(OracleHelper.GetConnection(), "PKG_BBS_Article.Delete_Article", CommandType.StoredProcedure, parameters, "p_result");
+            return await OracleHelper.Write(OracleHelper.GetConnection(), "PKG_BBS_Article.Delete_Article", CommandType.StoredProcedure, parameters, "p_result");
         }
 
         public static async Task<Tuple<int, string, string, int>> Reply_Article(
@@ -286,12 +286,7 @@ namespace ELSuitcases.BBS.Library.Server
                 }
             };
 
-            int dbResult = await OracleHelper.Write(
-                                    OracleHelper.GetConnection(),
-                                    "PKG_BBS_Article.Reply_Article",
-                                    CommandType.StoredProcedure,
-                                    parameters,
-                                    "p_result");
+            int dbResult = await OracleHelper.Write(OracleHelper.GetConnection(), "PKG_BBS_Article.Reply_Article", CommandType.StoredProcedure, parameters, "p_result");
 
             result = new Tuple<int, string, string, int>(
                             dbResult,

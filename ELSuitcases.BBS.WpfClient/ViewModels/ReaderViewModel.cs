@@ -9,6 +9,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
+using System.Web;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -16,9 +17,8 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ELSuitcases.BBS.Library;
 using Microsoft.Win32;
-using System.Web;
+using ELSuitcases.BBS.Library;
 
 namespace ELSuitcases.BBS.WpfClient
 {
@@ -60,6 +60,9 @@ namespace ELSuitcases.BBS.WpfClient
         private ICommand? _CancelCommand;
 
         [ObservableProperty]
+        private ICommand? _DeleteCommand;
+
+        [ObservableProperty]
         private ICommand? _RefreshCommand;
 
         [ObservableProperty]
@@ -73,6 +76,7 @@ namespace ELSuitcases.BBS.WpfClient
             _ViewLoadedCommand = new RelayCommand<RoutedEventArgs>(ViewLoadedCommandAction);
             _AttachedFileClickCommand = new AsyncRelayCommand<MouseButtonEventArgs>(AttachedFileClickCommandAction);
             _CancelCommand = new AsyncRelayCommand<RoutedEventArgs>(CancelCommandAction);
+            _DeleteCommand = new AsyncRelayCommand<RoutedEventArgs>(DeleteCommandAction);
             _RefreshCommand = new AsyncRelayCommand(RefreshCommandAction);
             _UpdateCommand = new RelayCommand<RoutedEventArgs>(UpdateCommandAction);
 
@@ -121,6 +125,49 @@ namespace ELSuitcases.BBS.WpfClient
             {
                 if (Window.GetWindow(_view) is Window win)
                     win.Close();
+            }
+        }
+
+        private async Task DeleteCommandAction(RoutedEventArgs? args)
+        {
+            if (Article == null) return;
+
+            MessageBoxResult userAnswer = App.ShowMessageBoxQuestion("게시물을 삭제 하시겠습니까?", "게시물 삭제");
+            if (userAnswer == MessageBoxResult.No) return;
+
+            await Task.Delay(1);
+
+            bool result = false;
+            Uri uriApi = new Uri(string.Format("{0}/{1}/{2}/{3}",
+                                                App.APIServerURL_Article?.ToString() ?? string.Empty,
+                                                Article.GetString(Constants.PROPERTY_KEY_NAME_BBS_ID),
+                                                Article.GetString(Constants.PROPERTY_KEY_NAME_ARTICLE_ID),
+                                                Article.GetInt32(Constants.PROPERTY_KEY_NAME_REPLY_ID)));
+
+            using (HttpClient client = APIClientHelper.GenerateClient(uriApi, Constants.DEFAULT_VALUE_API_CLIENT_TIMEOUT))
+            {
+                HttpResponseMessage? response = null;
+
+                response = await APIClientHelper.Delete(client, uriApi);
+
+                await Task.Delay(250);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    result = true;
+                else
+                    result = false;
+            }
+
+            if (result)
+            {
+                App.ShowMessageBoxInformation("게시물을 삭제 하였습니다.", "게시물 삭제");
+
+                if (Window.GetWindow(_view) is Window win)
+                    win.Close();
+            }
+            else
+            {
+                App.ShowMessageBoxExclamation("게시물 삭제를 실패 하였습니다.", "게시물 삭제");
             }
         }
 
@@ -223,9 +270,9 @@ namespace ELSuitcases.BBS.WpfClient
             Uri uriApi = new Uri(string.Format("{0}/read/{1}/{2}/{3}", App.APIServerURL_Article, bbsID, articleID, replyID), UriKind.Absolute);
             ArticleDTO? result = null;
 
-            using (var client = APIClientHelper.GenerateClient(uriApi, Constants.DEFAULT_VALUE_API_CLIENT_TIMEOUT))
+            using (HttpClient client = APIClientHelper.GenerateClient(uriApi, Constants.DEFAULT_VALUE_API_CLIENT_TIMEOUT))
             {
-                string data = await client.GetStringAsync(uriApi.ToString());
+                string data = await client.GetStringAsync(uriApi);
                 if (!string.IsNullOrEmpty(data))
                 {
                     result = JsonSerializer.Deserialize<ArticleDTO?>(data);

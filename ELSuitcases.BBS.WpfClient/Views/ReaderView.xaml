@@ -362,7 +362,36 @@
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="Click">
                                     <i:InvokeCommandAction Command="{Binding UpdateCommand}"
-                                                           PassEventArgsToCommand="False" />
+                                                           PassEventArgsToCommand="True" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Button>
+                        <Button>
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}">
+                                    <Style.Setters>
+                                        <Setter Property="Margin" Value="0 0 10 0" />
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                        <Setter Property="VerticalAlignment" Value="Center" />
+                                        <Setter Property="Width" Value="120" />
+                                        <Setter Property="Height" Value="30" />
+                                        <Setter Property="Cursor" Value="Hand" />
+                                        <Setter Property="IsDefault" Value="True" />
+                                        <Setter Property="Content" Value="삭제" />
+                                    </Style.Setters>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsQuering}" Value="True">
+                                            <DataTrigger.Setters>
+                                                <Setter Property="IsEnabled" Value="False" />
+                                            </DataTrigger.Setters>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <i:InvokeCommandAction Command="{Binding DeleteCommand}"
+                                                           PassEventArgsToCommand="True" />
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </Button>
