@@ -76,12 +76,12 @@ namespace ELSuitcases.BBS.WpfClient
 
             bool result = await Task.Factory.StartNew(new Func<bool>(delegate ()
             {
-                Common.PrintDebugInfo(string.Format("{0} 로그인 시작", UserName));
+                Common.PrintDebugInfo(string.Format("{0} 로그인 시작", UserName.ToUpper()));
                 IsLoggingIn = true;
 
                 Task.Delay(2000).Wait();
 
-                Common.PrintDebugInfo(string.Format("{0} 로그인 완료", UserName));
+                Common.PrintDebugInfo(string.Format("{0} 로그인 완료", UserName.ToUpper()));
                 return true;
             }))
             .ContinueWith<bool>((t) =>
@@ -97,7 +97,7 @@ namespace ELSuitcases.BBS.WpfClient
 
             if (result)
             {
-                App.SetCurrentUser(UserName, UserName + "_" + Common.Generate16IdentityCode(DateTime.Now, new Random()));
+                App.SetCurrentUser(UserName.ToUpper(), UserName + "_" + Common.Generate16IdentityCode(DateTime.Now, new Random()));
                 App.ShowFirstHome();
                 return;
             }

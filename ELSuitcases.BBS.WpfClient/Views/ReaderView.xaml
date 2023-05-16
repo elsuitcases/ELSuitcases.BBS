@@ -356,6 +356,11 @@
                                                 <Setter Property="IsEnabled" Value="False" />
                                             </DataTrigger.Setters>
                                         </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsOwnedArticle}" Value="False">
+                                            <DataTrigger.Setters>
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger.Setters>
+                                        </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
@@ -383,6 +388,11 @@
                                         <DataTrigger Binding="{Binding IsQuering}" Value="True">
                                             <DataTrigger.Setters>
                                                 <Setter Property="IsEnabled" Value="False" />
+                                            </DataTrigger.Setters>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsOwnedArticle}" Value="False">
+                                            <DataTrigger.Setters>
+                                                <Setter Property="Visibility" Value="Collapsed" />
                                             </DataTrigger.Setters>
                                         </DataTrigger>
                                     </Style.Triggers>

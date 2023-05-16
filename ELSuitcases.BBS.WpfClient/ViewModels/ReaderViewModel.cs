@@ -41,10 +41,17 @@ namespace ELSuitcases.BBS.WpfClient
         private string _BusyMessage = "게시물을 불러오는 중 ...";
 
         [ObservableProperty]
-        private bool _IsQuering = false;
+        private bool _IsDownloading = false;
 
         [ObservableProperty]
-        private bool _IsDownloading = false;
+        private bool _IsQuering = false;
+
+        private bool _IsOwnedArticle = false;
+        public bool IsOwnedArticle
+        {
+            get => _IsOwnedArticle;
+            private set => SetProperty(ref _IsOwnedArticle, value);
+        }
 
         [ObservableProperty]
         private ProgressState _DownloadState = new ProgressState("");
@@ -341,6 +348,16 @@ namespace ELSuitcases.BBS.WpfClient
                                 IsAddedNew = false
                             });
                         }
+                    }
+
+                    if ((App.CurrentUser != null) && 
+                        (App.CurrentUser.GetString(Constants.PROPERTY_KEY_NAME_CURRENT_USER_ACCOUNT_ID) == (Article.GetString(Constants.PROPERTY_KEY_NAME_WRITER))))
+                    {
+                        IsOwnedArticle = true;
+                    }
+                    else
+                    {
+                        IsOwnedArticle = false;
                     }
                 }
                 catch (IOException exIO)
