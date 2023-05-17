@@ -2,13 +2,77 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ELSuitcases.BBS.Library
 {
     public static class Common
     {
+        public static async Task<byte[]> AESDecrypt(byte[] encryptedData, string key, string iv)
+        {
+            if ((string.IsNullOrEmpty(key)) || (string.IsNullOrEmpty(iv)))
+                throw new ArgumentNullException();
+
+            byte[] result = null;
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = Encoding.UTF8.GetBytes(iv);
+
+                ICryptoTransform cryptoTransform = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                using (MemoryStream ms = new MemoryStream(encryptedData))
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, cryptoTransform, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader sr = new StreamReader(cs))
+                        {
+                            result = Convert.FromBase64String(await sr.ReadToEndAsync());
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+        
+        public static async Task<byte[]> AESEncrypt(byte[] data, string key, string iv)
+        {
+            if ((string.IsNullOrEmpty(key)) || (string.IsNullOrEmpty(iv)))
+                throw new ArgumentNullException();
+            
+            byte[] result = null;
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = Encoding.UTF8.GetBytes(iv);
+
+                ICryptoTransform cryptoTransform = aes.CreateEncryptor(aes.Key, aes.IV);
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, cryptoTransform, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter sw = new StreamWriter(cs))
+                        {
+                            await sw.WriteAsync(Convert.ToBase64String(data));
+                            await sw.FlushAsync();
+                        }
+
+                        result = ms.ToArray();
+                    }
+                }
+            }
+
+            return result;
+        }
+        
         public static List<DTO> ConvertFromDataTableToDTOList(DataTable dt)
         {
             List<DTO> result = new List<DTO>();

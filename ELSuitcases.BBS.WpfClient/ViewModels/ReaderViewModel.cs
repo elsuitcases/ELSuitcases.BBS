@@ -153,16 +153,13 @@ namespace ELSuitcases.BBS.WpfClient
 
             using (HttpClient client = APIClientHelper.GenerateClient(uriApi, Constants.DEFAULT_VALUE_API_CLIENT_TIMEOUT))
             {
-                HttpResponseMessage? response = null;
-
-                response = await APIClientHelper.Delete(client, uriApi);
-
-                await Task.Delay(250);
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                    result = true;
-                else
-                    result = false;
+                using (HttpResponseMessage response = await APIClientHelper.Delete(client, uriApi))
+                {
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        result = true;
+                    else
+                        result = false;
+                }
             }
 
             if (result)

@@ -147,6 +147,8 @@ namespace ELSuitcases.BBS.WpfClient
             }
         }
 
+
+
         private async Task ViewLoadedCommandAction(RoutedEventArgs? args)
         {
             if (args?.Source is not WriterView view) return;
@@ -396,14 +398,12 @@ namespace ELSuitcases.BBS.WpfClient
             {
                 using (HttpClient client = APIClientHelper.GenerateClient(App.APIServerURL_Article, Constants.DEFAULT_VALUE_API_CLIENT_TIMEOUT))
                 {
-                    HttpResponseMessage? response = null;
+                    HttpResponseMessage response;
 
                     if (IsUpdateMode)
                         response = await APIClientHelper.Put(client, App.APIServerURL_Article, article);
                     else
                         response = await APIClientHelper.Post(client, App.APIServerURL_Article, article);
-
-                    await Task.Delay(250);
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
