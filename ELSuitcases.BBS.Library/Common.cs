@@ -12,17 +12,17 @@ namespace ELSuitcases.BBS.Library
 {
     public static class Common
     {
-        public static async Task<byte[]> AESDecrypt(byte[] encryptedData, string key, string iv)
+        public static async Task<byte[]> AESDecrypt(byte[] encryptedData, byte[] key, byte[] iv)
         {
-            if ((string.IsNullOrEmpty(key)) || (string.IsNullOrEmpty(iv)))
+            if ((key == null) || (iv == null))
                 throw new ArgumentNullException();
 
             byte[] result = null;
 
             using (Aes aes = Aes.Create())
             {
-                aes.Key = Encoding.UTF8.GetBytes(key);
-                aes.IV = Encoding.UTF8.GetBytes(iv);
+                aes.Key = key;
+                aes.IV = iv;
 
                 ICryptoTransform cryptoTransform = aes.CreateDecryptor(aes.Key, aes.IV);
 
@@ -41,17 +41,17 @@ namespace ELSuitcases.BBS.Library
             return result;
         }
         
-        public static async Task<byte[]> AESEncrypt(byte[] data, string key, string iv)
+        public static async Task<byte[]> AESEncrypt(byte[] data, byte[] key, byte[] iv)
         {
-            if ((string.IsNullOrEmpty(key)) || (string.IsNullOrEmpty(iv)))
+            if ((key == null) || (iv == null))
                 throw new ArgumentNullException();
             
             byte[] result = null;
 
             using (Aes aes = Aes.Create())
             {
-                aes.Key = Encoding.UTF8.GetBytes(key);
-                aes.IV = Encoding.UTF8.GetBytes(iv);
+                aes.Key = key;
+                aes.IV = iv;
 
                 ICryptoTransform cryptoTransform = aes.CreateEncryptor(aes.Key, aes.IV);
 
