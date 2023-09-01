@@ -80,29 +80,34 @@
                     <Style TargetType="{x:Type Grid}">
                         <Style.Setters>
                             <Setter Property="Margin" Value="0 0 0 10" />
-                            <Setter Property="Height" Value="30" />
+                            <Setter Property="Height" Value="60" />
                         </Style.Setters>
                     </Style>
                 </Grid.Style>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0">
+                <!-- 사용자 ID -->
+                <TextBlock Grid.Row="0" Grid.Column="0">
                     <TextBlock.Style>
                         <Style TargetType="{x:Type TextBlock}">
                             <Style.Setters>
                                 <Setter Property="HorizontalAlignment" Value="Stretch" />
                                 <Setter Property="VerticalAlignment" Value="Center" />
                                 <Setter Property="TextAlignment" Value="Left" />
-                                <Setter Property="Text" Value="사용자 이름 : " />
+                                <Setter Property="Text" Value="사용자 ID : " />
                             </Style.Setters>
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
                 <TextBox x:Name="txtUserName" 
-                         Grid.Column="1">
+                         Grid.Row="0" Grid.Column="1">
                     <TextBox.Style>
                         <Style TargetType="{x:Type TextBox}">
                             <Style.Setters>
@@ -110,6 +115,8 @@
                                 <Setter Property="VerticalAlignment" Value="Stretch" />
                                 <Setter Property="HorizontalContentAlignment" Value="Left" />
                                 <Setter Property="VerticalContentAlignment" Value="Center" />
+                                <Setter Property="AcceptsReturn" Value="False" />
+                                <Setter Property="AcceptsTab" Value="False" />
                                 <Setter Property="MaxLength" Value="16" />
                                 <Setter Property="MaxLines" Value="1" />
                                 <Setter Property="Text" Value="{Binding UserName, UpdateSourceTrigger=PropertyChanged}" />
@@ -124,6 +131,41 @@
                         </Style>
                     </TextBox.Style>
                 </TextBox>
+                
+                <!-- 사용자 암호 -->
+                <TextBlock Grid.Row="1" Grid.Column="0">
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Style.Setters>
+                                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="TextAlignment" Value="Left" />
+                                <Setter Property="Text" Value="암호 : " />
+                            </Style.Setters>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                <PasswordBox x:Name="txtUserPassword" 
+                             Grid.Row="1" Grid.Column="1">
+                    <PasswordBox.Style>
+                        <Style TargetType="{x:Type PasswordBox}">
+                            <Style.Setters>
+                                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                <Setter Property="VerticalAlignment" Value="Stretch" />
+                                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                <Setter Property="VerticalContentAlignment" Value="Center" />
+                                <Setter Property="MaxLength" Value="16" />
+                            </Style.Setters>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsLoggingIn}" Value="True">
+                                    <DataTrigger.Setters>
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger.Setters>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </PasswordBox.Style>
+                </PasswordBox>
             </Grid>
             <Button x:Name="btnLogin">
                 <Button.Style>

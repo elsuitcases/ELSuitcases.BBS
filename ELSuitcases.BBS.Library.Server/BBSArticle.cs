@@ -35,21 +35,6 @@ namespace ELSuitcases.BBS.Library.Server
 
         public static async Task<DataTable> List_By_Page(string bbsId, int pageNo = 1, int pageSize = 10, string keywordTitle = "")
         {
-            OracleParameter paraTotalCount = new OracleParameter()
-            {
-                ParameterName = "p_total_count",
-                Value = -1,
-                Direction = ParameterDirection.Output,
-                OracleDbType = OracleDbType.Int32
-            };
-            OracleParameter paraPageCount = new OracleParameter()
-            {
-                ParameterName = "p_page_count",
-                Value = -1,
-                Direction = ParameterDirection.Output,
-                OracleDbType = OracleDbType.Int32
-            };
-
             List<OracleParameter> parameters = new List<OracleParameter>
             {
                 new OracleParameter()
@@ -84,8 +69,20 @@ namespace ELSuitcases.BBS.Library.Server
                     Direction = ParameterDirection.Output,
                     OracleDbType = OracleDbType.RefCursor
                 },
-                paraTotalCount,
-                paraPageCount
+                new OracleParameter()
+                {
+                    ParameterName = "p_total_count",
+                    Value = -1,
+                    Direction = ParameterDirection.Output,
+                    OracleDbType = OracleDbType.Int32
+                },
+                new OracleParameter()
+                {
+                    ParameterName = "p_page_count",
+                    Value = -1,
+                    Direction = ParameterDirection.Output,
+                    OracleDbType = OracleDbType.Int32
+                }
             };
 
             return await OracleHelper.Select(OracleHelper.GetConnection(), "PKG_BBS_Article.List_By_Page", CommandType.StoredProcedure, parameters);
@@ -218,13 +215,15 @@ namespace ELSuitcases.BBS.Library.Server
             {
                 ParameterName = "p_bbs_id",
                 Value = bbsId,
-                Direction = ParameterDirection.Input
+                Direction = ParameterDirection.Input,
+                OracleDbType = OracleDbType.Varchar2
             };
             OracleParameter paraArticleID = new OracleParameter()
             {
                 ParameterName = "p_article_id",
                 Value = articleId,
-                Direction = ParameterDirection.Input
+                Direction = ParameterDirection.Input,
+                OracleDbType = OracleDbType.Varchar2
             };
             OracleParameter paraReplyID = new OracleParameter()
             {

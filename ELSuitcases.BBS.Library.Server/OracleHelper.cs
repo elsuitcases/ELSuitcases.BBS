@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.Data;
-using System.Transactions;
 using Oracle.ManagedDataAccess.Client;
 
 namespace ELSuitcases.BBS.Library.Server
@@ -53,6 +52,11 @@ namespace ELSuitcases.BBS.Library.Server
             string userPassword)
         {
             return new OracleConnection(GenerateConnectionString(hostName, port, serviceName, userId, userPassword));
+        }
+
+        public static bool CheckIsDbConnectionReady(OracleConnection dbConnection)
+        {
+            return ((dbConnection != null) && (dbConnection.State == ConnectionState.Open));
         }
 
         public static Task<DataTable> Select(
@@ -124,14 +128,14 @@ namespace ELSuitcases.BBS.Library.Server
                     {
                         comm.Connection.Open();
 
-                        using (TransactionScope scope = new TransactionScope())
+                        using (OracleTransaction trans = comm.Connection.BeginTransaction())
                         {
                             try
                             {
                                 int affectedCount = comm.ExecuteNonQuery();
                                 int affectedRowsCount = 0;
 
-                                scope.Complete();
+                                trans.Commit();
 
                                 if ((comm.Parameters.Contains(affectedCountParameterName)) &&
                                     (int.TryParse(comm.Parameters[affectedCountParameterName].Value.ToString(), out affectedRowsCount)))
@@ -143,6 +147,7 @@ namespace ELSuitcases.BBS.Library.Server
                             }
                             catch (Exception)
                             {
+                                trans.Rollback();
                                 result = -1;
                                 throw;
                             }

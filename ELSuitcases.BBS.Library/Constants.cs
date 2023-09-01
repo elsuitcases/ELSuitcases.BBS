@@ -60,6 +60,8 @@ namespace ELSuitcases.BBS.Library
         public const string PROPERTY_KEY_NAME_UPLOAD_TASK = "UPLOAD_TASK";
 
         public const string PROPERTY_KEY_NAME_CURRENT_USER_ACCOUNT_ID = "ACCOUNT_ID";
+        public const string PROPERTY_KEY_NAME_CURRENT_USER_ACCOUNT_PW = "ACCOUNT_PW";
+        public const string PROPERTY_KEY_NAME_CURRENT_USER_EMAIL = "EMAIL";
         public const string PROPERTY_KEY_NAME_CURRENT_USER_FULLNAME = "FULLNAME";
         public const string PROPERTY_KEY_NAME_CURRENT_USER_LOGIN_TIME = "LOGIN_TIME";
 

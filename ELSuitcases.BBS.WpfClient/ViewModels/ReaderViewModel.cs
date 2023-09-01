@@ -19,6 +19,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
 using ELSuitcases.BBS.Library;
+using System.Xml;
 
 namespace ELSuitcases.BBS.WpfClient
 {
@@ -311,6 +312,10 @@ namespace ELSuitcases.BBS.WpfClient
                         {
                             stream.Position = 0;
                             range.Load(stream, DataFormats.Xaml);
+                        }
+                        catch (XmlException)
+                        {
+                            range.Load(stream, DataFormats.Text);
                         }
                         catch (XamlParseException)
                         {

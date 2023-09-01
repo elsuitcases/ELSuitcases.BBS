@@ -18,6 +18,8 @@ namespace ELSuitcases.BBS.WpfClient
 {
     internal partial class MainTopViewModel : ViewModelBase
     {
+        public UserDTO? CurrentUser { get => App.CurrentUser; }
+        
         #region [COMMAND]
         [ObservableProperty]
         private ICommand _ViewLoadedCommand;
@@ -34,7 +36,7 @@ namespace ELSuitcases.BBS.WpfClient
 
         private void ViewLoadedCommandAction(RoutedEventArgs? args)
         {
-            
+            OnPropertyChanged(nameof(CurrentUser));
         }
     }
 }

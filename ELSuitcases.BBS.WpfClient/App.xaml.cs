@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.DependencyInjection;
@@ -62,6 +65,8 @@ namespace ELSuitcases.BBS.WpfClient
             this.Exit += App_Exit;
         }
 
+
+
         private void App_Process_Exited(object? sender, EventArgs e)
         {
             Common.PrintDebugInfo("앱 프로세스가 종료되었습니다.");
@@ -86,6 +91,12 @@ namespace ELSuitcases.BBS.WpfClient
 
             LoadConfig().Wait();
             BuildIocServices();
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.SystemDefault | 
+                                                   SecurityProtocolType.Tls | 
+                                                   SecurityProtocolType.Tls11 | 
+                                                   SecurityProtocolType.Tls12 | 
+                                                   SecurityProtocolType.Tls13;
 
             var vmLogin = IocServices.GetRequiredService<LoginViewModel>();
             SetMainWindowShell(vmLogin, "사용자 로그인").Show();
@@ -198,7 +209,10 @@ namespace ELSuitcases.BBS.WpfClient
             vmHome.ViewModelOfSetting = IocServices.GetRequiredService<SettingViewModel>();
 
             var winMain = SetMainWindowShell(vmHome, Constants.APPLICATION_NAME);
-            if (winMain == null) return;
+
+            if (winMain == null) 
+                return;
+
             winMain.ShowInTaskbar = true;
             winMain.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             winMain.WindowState = WindowState.Maximized;
@@ -208,19 +222,59 @@ namespace ELSuitcases.BBS.WpfClient
             winMain.MinHeight = 600;
         }
 
-        internal static string GetCurrentUserID()
+        internal static async Task<bool> Login(string accountId, string accountPassword)
         {
-            return CurrentUser?.GetString(Constants.PROPERTY_KEY_NAME_CURRENT_USER_ACCOUNT_ID, null) ?? "GUEST" + Common.Generate16IdentityCode(DateTime.Now, new Random());
+            if ((APIServerBaseURL == null) || (string.IsNullOrEmpty(accountId)))
+                return false;
+            
+            bool result = false;
+            Uri uriLogin = new Uri(string.Format("{0}/member/login", APIServerBaseURL));
+            UserDTO? dtoUser = null;
+
+            Common.PrintDebugInfo("* 초기 계정 ID / 암호는 guest / guest 입니다.");
+            Common.PrintDebugInfo(string.Format("{0} 로그인 시작", accountId));
+
+            try
+            {
+                using (HttpClient client = APIClientHelper.GenerateClient(uriLogin, Constants.DEFAULT_VALUE_API_CLIENT_TIMEOUT))
+                {
+                    Common.PrintDebugInfo(uriLogin.ToString(), typeof(App).GetType().Name);
+
+                    client.DefaultRequestHeaders.Add(Constants.PROPERTY_KEY_NAME_CURRENT_USER_ACCOUNT_ID, accountId);
+                    client.DefaultRequestHeaders.Add(Constants.PROPERTY_KEY_NAME_CURRENT_USER_ACCOUNT_PW, accountPassword);
+
+                    string data = await APIClientHelper.Get_String(client, uriLogin);
+
+                    if (!string.IsNullOrEmpty(data))
+                        dtoUser = JsonSerializer.Deserialize<UserDTO?>(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                Common.PrintDebugFail(ex, typeof(App).GetType().Name, string.Format("{0} 로그인 오류", accountId));
+                throw;
+            }
+            finally
+            {
+                if (dtoUser != null)
+                {
+                    CurrentUser = dtoUser;
+                    result = true;
+                    Common.PrintDebugInfo(string.Format("{0} 로그인 성공", accountId));
+                }
+                else
+                {
+                    CurrentUser = null;
+                    Common.PrintDebugInfo(string.Format("{0} 로그인 실패", accountId));
+                }
+            }
+
+            return result;
         }
 
-        internal static DTO? SetCurrentUser(string accountId, string fullName = "")
+        internal static string GetCurrentUserID()
         {
-            if (string.IsNullOrWhiteSpace(accountId))
-                CurrentUser = null;
-            else
-                CurrentUser = new UserDTO(accountId, (!string.IsNullOrEmpty(fullName)) ? fullName : accountId);
-
-            return CurrentUser;
+            return CurrentUser?.GetString(Constants.PROPERTY_KEY_NAME_CURRENT_USER_ACCOUNT_ID, null) ?? string.Empty;
         }
 
         internal static Window SetMainWindowShell(ViewModelBase? viewModel, string title = "")

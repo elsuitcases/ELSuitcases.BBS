@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Resources;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -100,36 +99,34 @@ namespace ELSuitcases.BBS.Library
                 File.Delete(fileToSave.FullName);
 
             using (FileStream fs = new FileStream(fileToSave.FullName, FileMode.CreateNew, FileAccess.Write, FileShare.Write))
+            using (Stream s = await client.GetStreamAsync(uriApi))
             {
-                using (Stream s = await client.GetStreamAsync(uriApi))
+                try
                 {
-                    try
+                    byte[] buffer = new byte[Constants.DEFAULT_VALUE_BUFFER_SIZE];
+
+                    while ((readBytes = await s.ReadAsync(buffer, 0, buffer.Length)) > 0)
                     {
-                        byte[] buffer = new byte[Constants.DEFAULT_VALUE_BUFFER_SIZE];
+                        await fs.WriteAsync(buffer, 0, readBytes);
+                        await fs.FlushAsync();
 
-                        while ((readBytes = await s.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                        {
-                            await fs.WriteAsync(buffer, 0, readBytes);
-                            await fs.FlushAsync();
+                        readTotalBytes += readBytes;
 
-                            readTotalBytes += readBytes;
+                        state.Percent = ((double)readTotalBytes / (double)totalBytesToRead) * 100;
+                        if (state.Percent < 0) state.Percent = 0;
+                        else if (state.Percent > 100) state.Percent = 100;
 
-                            state.Percent = ((double)readTotalBytes / (double)totalBytesToRead) * 100;
-                            if (state.Percent < 0) state.Percent = 0;
-                            else if (state.Percent > 100) state.Percent = 100;
+                        Common.PrintDebugInfo(string.Format("[첨부파일 버퍼 다운로드 - {0}%] FILENAME = {1} / TOTAL_RECEIVED = {2}",
+                                                        state.Percent.ToString("N0"), fileToSave.Name, readTotalBytes),
+                                                        apiFuncName);
 
-                            Common.PrintDebugInfo(string.Format("[첨부파일 버퍼 다운로드 - {0}%] FILENAME = {1} / TOTAL_RECEIVED = {2}",
-                                                            state.Percent.ToString("N0"), fileToSave.Name, readTotalBytes),
-                                                            apiFuncName);
-
-                            await Task.Delay(1);
-                        }
+                        await Task.Delay(1);
                     }
-                    catch (Exception ex)
-                    {
-                        state.CancelTokenSource?.Cancel(true);
-                        Common.ThrowException(ex, false, apiFuncName, Constants.MESSAGE_ERROR_FUNCTION_ON_RUNNING);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    state.CancelTokenSource?.Cancel(true);
+                    Common.ThrowException(ex, false, apiFuncName, Constants.MESSAGE_ERROR_FUNCTION_ON_RUNNING);
                 }
             }
 
@@ -172,7 +169,7 @@ namespace ELSuitcases.BBS.Library
 
             try
             {
-                using (HttpContent c = new StringContent(dto.ToString(), Encoding.UTF8, "application/json"))
+                using (var c = new StringContent(dto.ToString(), Encoding.UTF8, "application/json"))
                 {
                     response = await client.PostAsync(uriApi, c);
                     Common.PrintDebugInfo(string.Format("{0} [{1}]", apiFuncName, response.StatusCode));
@@ -197,7 +194,7 @@ namespace ELSuitcases.BBS.Library
 
             try
             {
-                using (HttpContent c = new StringContent(dto.ToString(), Encoding.UTF8, "application/json"))
+                using (var c = new StringContent(dto.ToString(), Encoding.UTF8, "application/json"))
                 {
                     response = await client.PutAsync(uriApi, c);
                     Common.PrintDebugInfo(string.Format("{0} [{1}]", apiFuncName, response.StatusCode));

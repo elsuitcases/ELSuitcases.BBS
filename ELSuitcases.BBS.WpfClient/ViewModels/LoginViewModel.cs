@@ -9,13 +9,13 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ELSuitcases.BBS.Library;
 
 namespace ELSuitcases.BBS.WpfClient
 {
     internal partial class LoginViewModel : ViewModelBase
     {
         private TextBox? _txtUserName;
+        private PasswordBox? _txtUserPassword;
 
 
 
@@ -29,6 +29,9 @@ namespace ELSuitcases.BBS.WpfClient
 
         [ObservableProperty]
         private string _UserName = string.Empty;
+
+        [ObservableProperty]
+        private string _UserPassword = string.Empty;
 
         #region [COMMAND]
         [ObservableProperty]
@@ -57,8 +60,18 @@ namespace ELSuitcases.BBS.WpfClient
 
             OnPropertyChanged(nameof(ApiServerURI));
 
-            UserName = "GUEST";
             _txtUserName = view.FindName("txtUserName") as TextBox;
+            _txtUserPassword = view.FindName("txtUserPassword") as PasswordBox;
+            if (_txtUserPassword != null)
+                _txtUserPassword.PasswordChanged += (s, e) =>
+                {
+                    if (e.Source is PasswordBox pb)
+                    {
+                        e.Handled = true;
+                        UserPassword = pb.Password;
+                    }
+                };
+
             _txtUserName?.Focus();
         }
 
@@ -74,39 +87,24 @@ namespace ELSuitcases.BBS.WpfClient
                 return;
             }
 
-            bool result = await Task.Factory.StartNew(new Func<bool>(delegate ()
-            {
-                Common.PrintDebugInfo(string.Format("{0} 로그인 시작", UserName.ToUpper()));
-                IsLoggingIn = true;
+            UserName = UserName.ToUpper();
+            IsLoggingIn = true;
 
-                Task.Delay(2000).Wait();
+            bool result = await App.Login(UserName, UserPassword);
 
-                Common.PrintDebugInfo(string.Format("{0} 로그인 완료", UserName.ToUpper()));
-                return true;
-            }))
-            .ContinueWith<bool>((t) =>
-            {
-                if (t.IsFaulted)
-                {
-                    Common.PrintDebugFail(t.Exception ?? new Exception());
-                }
-                
-                IsLoggingIn = false;
-                return t.Result;
-            });
+            IsLoggingIn = false;
 
             if (result)
             {
-                App.SetCurrentUser(UserName.ToUpper(), UserName + "_" + Common.Generate16IdentityCode(DateTime.Now, new Random()));
                 App.ShowFirstHome();
                 return;
             }
             else
             {
-                App.SetCurrentUser(string.Empty);
                 InvokeOnUIThread(() =>
                 {
                     MessageBox.Show("사용자 로그인에 실패하였습니다.", "로그인", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    _txtUserName?.SelectAll();
                     _txtUserName?.Focus();
                 });
             }
