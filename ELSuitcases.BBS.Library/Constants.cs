@@ -29,6 +29,9 @@ namespace ELSuitcases.BBS.Library
         public const int DEFAULT_VALUE_PAGER_PAGE_SIZE = 10;
         public const char DEFAULT_VALUE_SEPARATOR = SEPARATOR_COMMA;
 
+        public const string ENCRYPT_KEY = "ELSuitcases.BBS!";
+        public const string ENCRYPT_IV = "ABCD1234WXYZ7890";
+
         public const string MESSAGE_ERROR_ARGUMENTS_NULL = "기능 실행에 필요한 요소가 제공되지 않았습니다.";
         public const string MESSAGE_ERROR_FUNCTION_ON_RUNNING = "기능 실행 중 오류가 발생하였습니다.";
 

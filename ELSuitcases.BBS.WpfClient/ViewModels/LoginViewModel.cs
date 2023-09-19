@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ELSuitcases.BBS.Library;
 
 namespace ELSuitcases.BBS.WpfClient
 {
@@ -90,6 +91,10 @@ namespace ELSuitcases.BBS.WpfClient
             UserName = UserName.ToUpper();
             IsLoggingIn = true;
 
+            UserPassword = Convert.ToBase64String(await Common.AESEncrypt(
+                                                                Encoding.UTF8.GetBytes(UserPassword),
+                                                                Encoding.UTF8.GetBytes(Constants.ENCRYPT_KEY),
+                                                                Encoding.UTF8.GetBytes(Constants.ENCRYPT_IV)));
             bool result = await App.Login(UserName, UserPassword);
 
             IsLoggingIn = false;

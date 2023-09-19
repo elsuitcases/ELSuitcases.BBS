@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ELSuitcases.BBS.Library;
 using ELSuitcases.BBS.Library.Server;
+using System.Text;
 
 namespace ELSuitcases.BBS.APIServer.Controllers
 {
@@ -30,6 +31,11 @@ namespace ELSuitcases.BBS.APIServer.Controllers
 
             try
             {
+                userPW = Encoding.UTF8.GetString(await Common.AESDecrypt(
+                                                                Convert.FromBase64String(userPW), 
+                                                                Encoding.UTF8.GetBytes(Constants.ENCRYPT_KEY), 
+                                                                Encoding.UTF8.GetBytes(Constants.ENCRYPT_IV)));
+                
                 using (var dt = await BBSMember.GetByAccountIDAndPassword(userID, userPW))
                 {
                     await Task.Delay(1);
