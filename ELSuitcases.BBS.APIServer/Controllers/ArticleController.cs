@@ -517,7 +517,19 @@ namespace ELSuitcases.BBS.APIServer.Controllers
             Response.Headers.Add(Constants.PROPERTY_KEY_NAME_ATTACHED_FILE_SIZE, new Microsoft.Extensions.Primitives.StringValues(entrySize));
 
             if (fiPackage.Directory != null)
-                return await FileHelper.GetEntryFromZipArchive(fiPackage.FullName, new DirectoryInfo(fiPackage.Directory.FullName + "\\_Entry_Temp"), fileName);
+            {
+                DirectoryInfo folder = new DirectoryInfo(fiPackage.Directory.FullName + "\\_Entry_Temp\\" + Guid.NewGuid().ToString());
+                Stream? stream = await FileHelper.GetEntryFromZipArchive(fiPackage.FullName, folder, fileName);
+                Response.OnCompleted(new Func<Task>(delegate ()
+                {
+                    return Task.Factory.StartNew(() =>
+                    {
+                        Directory.Delete(folder.FullName, true);
+                    });
+                }));
+
+                return stream;
+            }
             else
                 return null;
         }
