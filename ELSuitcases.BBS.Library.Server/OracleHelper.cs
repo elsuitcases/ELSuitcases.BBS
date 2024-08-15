@@ -14,19 +14,20 @@ namespace ELSuitcases.BBS.Library.Server
         private const string ORACLE_SERVER_HOST_NAME = "127.0.0.1";
         private const int ORACLE_SERVER_PORT = 1521;
         private const string ORACLE_SERVER_SERVICE_NAME = "ORCL";
+        private const string ORACLE_SERVER_SID = "ORCL";
         private const string ORACLE_USER_NAME = "bbs";
         private const string ORACLE_USER_PASSWORD = "bbs";
 
 
 
-        internal static string GenerateConnectionString(
+        internal static string GenerateConnectionStringAsServiceName(
             string hostName,
             int port,
             string serviceName,
             string userId,
             string userPassword)
         {
-            return string.Format("Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST={0})(PORT={1})))(CONNECT_DATA=(SERVICE_NAME={2}))));User Id={3};password={4};",
+            return string.Format("Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST={0})(PORT={1})))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME={2}))));User Id={3};password={4};",
                             hostName,
                             port,
                             serviceName,
@@ -34,24 +35,49 @@ namespace ELSuitcases.BBS.Library.Server
                             userPassword);
         }
 
+        internal static string GenerateConnectionStringAsSID(
+            string hostName,
+            int port,
+            string sid,
+            string userId,
+            string userPassword)
+        {
+            return string.Format("Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST={0})(PORT={1})))(CONNECT_DATA=(SERVER=DEDICATED)(SID={2}))));User Id={3};password={4};",
+                            hostName,
+                            port,
+                            sid,
+                            userId,
+                            userPassword);
+        }
+
         internal static OracleConnection GetConnection()
         {
-            return GetConnection(
+            return GetConnectionAsSID(
                         ORACLE_SERVER_HOST_NAME,
                         ORACLE_SERVER_PORT,
-                        ORACLE_SERVER_SERVICE_NAME,
+                        ORACLE_SERVER_SID,
                         ORACLE_USER_NAME,
                         ORACLE_USER_PASSWORD);
         }
 
-        public static OracleConnection GetConnection(
+        public static OracleConnection GetConnectionAsServiceName(
             string hostName,
             int port,
             string serviceName,
             string userId,
             string userPassword)
         {
-            return new OracleConnection(GenerateConnectionString(hostName, port, serviceName, userId, userPassword));
+            return new OracleConnection(GenerateConnectionStringAsServiceName(hostName, port, serviceName, userId, userPassword));
+        }
+
+        public static OracleConnection GetConnectionAsSID(
+            string hostName,
+            int port,
+            string sid,
+            string userId,
+            string userPassword)
+        {
+            return new OracleConnection(GenerateConnectionStringAsSID(hostName, port, sid, userId, userPassword));
         }
 
         public static bool CheckIsDbConnectionReady(OracleConnection dbConnection)
